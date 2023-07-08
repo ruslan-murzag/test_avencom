@@ -14,7 +14,7 @@ conn.commit()
 cursor.close()
 conn.close()
 
-Token = '5931067955:AAGnToQ36i5M0oq9W4BEr6qlQd_FBNy7fjU'
+Token = ''
 bot = telebot.TeleBot(Token)
 
 
