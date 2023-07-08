@@ -1,10 +1,16 @@
 import psycopg2
 
-conn = psycopg2.connect(dbname='db_avencom', user='user_avencom', password='', host='localhost')
-cursor = conn.cursor()
 
-commands = (
-    """
+def connect_sql(db_name, user_name, password, host):
+    conn = psycopg2.connect(dbname=db_name, user=user_name, password=password, host=host)
+    cursor = conn.cursor()
+    return conn, cursor
+
+
+def make_command(conn, cursor):
+
+    commands = (
+        """
     CREATE TABLE model (
         id SERIAL PRIMARY KEY , 
         model VARCHAR(255) UNIQUE NOT NULL
@@ -26,10 +32,15 @@ commands = (
     )
     """)
 
-for command in commands:
-    cursor.execute(command)
+    for command in commands:
+        cursor.execute(command)
 
-conn.commit()
+    conn.commit()
 
-cursor.close()
-conn.close()
+    cursor.close()
+    conn.close()
+
+
+if __name__ == '__main__':
+    conn, cursor = connect_sql('db_avencom', 'user_avencom', '', 'localhost')
+    make_command(conn, cursor)
