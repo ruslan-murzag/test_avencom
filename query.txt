@@ -1,0 +1,44 @@
+DROP FUNCTION IF EXISTS auto_report(brand_name VARCHAR, model_name VARCHAR);
+
+CREATE OR REPLACE FUNCTION auto_report (brand_name VARCHAR DEFAULT NULL, model_name VARCHAR DEFAULT NULL)
+RETURNS TABLE (
+	brand VARCHAR(255),
+	model VARCHAR(255),
+	year INT,
+	avg_price NUMERIC(10,2),
+	min_price INTEGER,
+	max_price INTEGER,
+	count BIGINT
+)
+AS $$
+BEGIN
+	IF brand_name is NULL and model_name is NULL THEN
+	RETURN QUERY
+	SELECT  brand.brand , model.model, auto.year,
+		ROUND(AVG(price),2) AS avg_price,
+		MIN(price) as min_price,
+		MAX(price) as max_price,
+		COUNT(auto.id) as count
+
+		from auto
+		INNER JOIN brand on brand.id = auto.brand
+		INNER JOIN model on model.id = auto.model
+		GROUP BY brand.brand, model.model, auto.year;
+	ELSE
+		RETURN QUERY
+		SELECT  brand.brand , model.model, auto.year,
+		ROUND(AVG(price),2) AS avg_price,
+		MIN(price) as min_price,
+		MAX(price) as max_price,
+		COUNT(auto.id) as count
+
+		from auto
+		INNER JOIN brand on brand.id = auto.brand
+		INNER JOIN model on model.id = auto.model
+		GROUP BY brand.brand, model.model, auto.year
+		HAVING brand.brand=brand_name AND model.model=model_name;
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT * FROM auto_report('Toyota', 'Camry');s
